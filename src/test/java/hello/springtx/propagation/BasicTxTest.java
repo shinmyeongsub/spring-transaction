@@ -1,4 +1,4 @@
-package hello.springtx.propagration;
+package hello.springtx.propagation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
@@ -128,6 +128,13 @@ public class BasicTxTest {
         TransactionStatus outer = txManager.getTransaction(new DefaultTransactionDefinition());
         log.info("outer.isNewTransaction()={}", outer.isNewTransaction()); // true
 
+        innerLogic();
+
+        log.info("외부 트랜잭션 커밋");
+        txManager.commit(outer); // 커밋
+    }
+
+    private void innerLogic() {
         log.info("내부 트랜잭션 시작");
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
         definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -136,11 +143,6 @@ public class BasicTxTest {
 
         log.info("내부 트랜잭션 롤백");
         txManager.rollback(inner); // 롤백
-
-        log.info("외부 트랜잭션 커밋");
-        txManager.commit(outer); // 커밋
-
-
     }
 
 }
